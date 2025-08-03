@@ -1,27 +1,38 @@
 package config
 
 import (
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
-	"github.com/infinity/identity-service/internal/delivery/http/route"
+	"github.com/infinity/identity-service/internal/handlers"
+	"github.com/infinity/identity-service/internal/logic"
+	"github.com/infinity/identity-service/internal/repository"
+	"github.com/infinity/identity-service/internal/routes"
+	"github.com/infinity/identity-service/server/config"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
 type BootstrapConfig struct {
-	DB       *gorm.DB
-	App      *fiber.App
-	Log      *logrus.Logger
-	Validate *validator.Validate
-	Config   *viper.Viper
-	Producer *kafka.Producer
+	DB        *gorm.DB
+	App       *fiber.App
+	Logger    *logrus.Logger
+	Validator *validator.Validate
+	Config    *config.AppConfig
 }
 
 func Bootstrap(config *BootstrapConfig) {
-	routeConfig := route.RouteConfig{
-		App: config.App,
+	// setup repositories
+	userRepository := repository.NewUserRepository(config.Logger)
+
+	// setup logic
+	userLogic := logic.NewUserLogic(config.Logger, config.DB, userRepository)
+
+	// setup handler
+	userHandler := handlers.NewUserHandler(config.Logger, config.Validator, userLogic)
+
+	routeConfig := routes.RouteConfig{
+		App:         config.App,
+		UserHandler: userHandler,
 	}
 	routeConfig.Setup()
 }

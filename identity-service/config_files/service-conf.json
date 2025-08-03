@@ -1,0 +1,73 @@
+{
+  "name": "identity service",
+  "serviceName": "identity-service",
+  "env": "dev",
+  "host": "0.0.0.0",
+  "port": 8083,
+  "ownerInfo": {
+    "name": "superbank",
+    "email": "regiewby@gmail.com",
+    "url": "https://github.com/regiewby/infinity"
+  },
+  "data": {
+    "mysql": {
+      "master": {
+        "dsn": "root:rootpass@tcp(localhost:3306)/identity_service?parseTime=true&loc=UTC",
+        "maxIdle": 2,
+        "maxOpen": 10,
+        "conMaxLifeTime": 300
+      },
+      "slave": {
+        "dsn": "root:rootpass@tcp(localhost:3306)/identity_service?parseTime=true&loc=UTC",
+        "maxIdle": 2,
+        "maxOpen": 10,
+        "conMaxLifeTime": 300
+      },
+      "masterCircuitBreaker": {
+        "timeoutsInMs": 1000,
+        "maxConcurrentReq": 100,
+        "volumePercentThreshold": 50
+      },
+      "slaveCircuitBreaker": {
+        "timeoutsInMs": 1000,
+        "maxConcurrentReq": 100,
+        "volumePercentThreshold": 50
+      }
+    }
+  },
+  "redisConfig": {
+    "addr": "localhost:6379",
+    "idleTimeoutInSec": 60,
+    "poolSize": 500,
+    "readOnlyFromSlaves": false,
+    "readTimeoutInSec": 1,
+    "writeTimeoutInSec": 1,
+    "tlsEnabled": false
+  },
+  "trace": {
+    "host": "localhost",
+    "port": 8126,
+    "disable": true
+  },
+  "logger": {
+    "workerCount": 10,
+    "bufferSize": 10000,
+    "logLevel": 2,
+    "stacktraceLevel": 4,
+    "logFormat": "json"
+  },
+  "kafkaConfig": {
+    "brokers": ["kafka-broker1:9092", "kafka-broker2:9092"],
+    "groupID": "regiewby.infinity",
+    "topicName": "dev-identity-service-tx",
+    "clusterType": "critical",
+    "enableTLS": true,
+    "initOffset": "earliest",
+    "clientID": "identity-service-local-user",
+    "enableAsyncAcks": false,
+    "syncProd": true,
+    "requiredAcks": -1,
+    "maxAttempts": 5,
+    "retryIntervalMillis": 500
+  }
+}

@@ -2,14 +2,13 @@ package config
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/spf13/viper"
+	"github.com/infinity/identity-service/server/config"
 )
 
-func NewFiber(config *viper.Viper) *fiber.App {
-	var app = fiber.New(fiber.Config{
-		AppName:      config.GetString("app.name"),
+func NewFiber(appConfig *config.AppConfig) *fiber.App {
+	app := fiber.New(fiber.Config{
+		AppName:      appConfig.ServiceName,
 		ErrorHandler: NewErrorHandler(),
-		Prefork:      config.GetBool("web.prefork"),
 	})
 
 	return app
